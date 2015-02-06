@@ -1,21 +1,10 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme"
-           parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-
-        <!-- Support library compatibility -->
-        <item name="actionBarStyle">@style/MyActionBar</item>
+    <!-- App theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorButtonNormal">@color/primary</item>
     </style>
-
-    <!-- ActionBar styles -->
-    <style name="MyActionBar"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/green</item>
-
-        <!-- Support library compatibility -->
-        <item name="background">@color/green</item>
-    </style>
-        <!-- Customize your theme here. -->
 </resources>

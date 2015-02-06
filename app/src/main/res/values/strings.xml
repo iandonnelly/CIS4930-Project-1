@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Project 1</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_connect">Connect</string>
+    <string name="app_name">DroidIRC</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Strings used for the Home screen-->
+    <string name="droid">Droid</string>
+    <string name="irc">IRC</string>
+    <string name="choose">Choose how to begin.</string>
+    <string name="create">Create</string>
+    <string name="join">Join</string>
 
 </resources>
