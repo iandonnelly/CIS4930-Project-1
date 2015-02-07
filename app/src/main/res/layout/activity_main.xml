@@ -50,6 +50,7 @@
         android:layout_weight=".5"
         android:gravity="center"
         android:text="@string/choose"
+        android:textColor="@android:color/secondary_text_light"
         android:textSize="20sp" />
 
     <LinearLayout

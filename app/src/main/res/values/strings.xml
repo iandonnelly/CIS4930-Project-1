@@ -4,11 +4,22 @@
     <string name="app_name">DroidIRC</string>
     <string name="action_settings">Settings</string>
 
-    <!-- Strings used for the Home screen-->
+    <!-- Strings used for the Home screen -->
     <string name="droid">Droid</string>
     <string name="irc">IRC</string>
     <string name="choose">Choose how to begin.</string>
     <string name="create">Create</string>
     <string name="join">Join</string>
+
+    <!-- Strings for the StartServerDialogFragment and JoinServerDialogFragment -->
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="server_settings">Server Settings</string>
+    <string name="name">Name</string>
+    <string name="port">Port</string>
+    <string name="nickname">Nickname</string>
+    <string name="address">IP Address</string>
+    <string name="title_activity_server">ServerActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
