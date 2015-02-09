@@ -1,4 +1,4 @@
-package com.example.ianjavier.project1.views;
+package com.example.ianjavier.project1.presentation.views.activities;
 
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.ianjavier.project1.R;
+import com.example.ianjavier.project1.presentation.views.dialogs.CreateServerDialogFragment;
+import com.example.ianjavier.project1.presentation.views.dialogs.JoinServerDialogFragment;
 
 
 public class MainActivity extends ActionBarActivity implements

@@ -1,4 +1,4 @@
-package com.example.ianjavier.project1.views;
+package com.example.ianjavier.project1.presentation.views.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,17 +14,17 @@ import android.widget.EditText;
 
 import com.example.ianjavier.project1.R;
 
-public class JoinServerDialogFragment extends DialogFragment {
-    public interface JoinServerDialogListener {
-        public void onJoinServerDialogPositiveClicked(String address, int port, String nickname);
+public class CreateServerDialogFragment extends DialogFragment {
+    public interface CreateServerDialogListener {
+        public void onCreateServerDialogPositiveClicked(String name, int port);
     }
 
-    private JoinServerDialogListener mListener;
+    private CreateServerDialogListener mListener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_join_server, null);
+        final View view = inflater.inflate(R.layout.dialog_create_server, null);
 
         final AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(view)
@@ -41,33 +42,25 @@ public class JoinServerDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         // Get input fields
-                        EditText addressField = (EditText) view.findViewById(R.id.address);
+                        EditText nameField = (EditText) view.findViewById(R.id.name);
                         EditText portField = (EditText) view.findViewById(R.id.port);
-                        EditText nicknameField = (EditText) view.findViewById(R.id.nickname);
 
                         // Get inputted values
-                        String address = addressField.getText().toString();
+                        String name = nameField.getText().toString();
                         String port = portField.getText().toString();
-                        String nickname = nicknameField.getText().toString();
 
                         // Ensure inputted values
-                        if (address.trim().length() == 0) {
-                            addressField.setError("Invalid IP address");
+                        if (TextUtils.isEmpty(name)) {
+                            nameField.setError("Invalid IP address");
                             return;
                         }
 
-                        if (port.trim().length() == 0) {
+                        if (TextUtils.isEmpty(port)) {
                             portField.setError("Invalid port");
                             return;
                         }
 
-                        if (nickname.trim().length() == 0) {
-                            nicknameField.setError("Invalid nickname");
-                            return;
-                        }
-
-                        mListener.onJoinServerDialogPositiveClicked(address,
-                                Integer.parseInt(port), nickname);
+                        mListener.onCreateServerDialogPositiveClicked(name, Integer.parseInt(port));
                         dialog.dismiss();
                     }
                 });
@@ -82,10 +75,10 @@ public class JoinServerDialogFragment extends DialogFragment {
         super.onAttach(activity);
 
         try {
-            mListener = (JoinServerDialogListener) activity;
+            mListener = (CreateServerDialogListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement JoinServerDialogListener");
+                    + " must implement CreateServerDialogListener");
         }
     }
 }
