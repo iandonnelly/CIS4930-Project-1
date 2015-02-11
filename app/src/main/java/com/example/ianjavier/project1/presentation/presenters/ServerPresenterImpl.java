@@ -15,11 +15,7 @@ public class ServerPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onStart(String name, int port) {
-        if (mServerToClientsInteractor.startServer(name, port)) {
-            mServerToClientsInteractor.addObserver(super.mView.getFragment());
-        } else {
-            // Error starting server
-        }
+        mServerToClientsInteractor.startServer(name, port, super.mView.getFragment());
     }
 
     @Override

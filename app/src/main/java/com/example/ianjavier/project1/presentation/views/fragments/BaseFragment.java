@@ -1,6 +1,7 @@
 package com.example.ianjavier.project1.presentation.views.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +15,9 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public abstract class BaseFragment extends Fragment implements Observer {
+public abstract class BaseFragment extends Fragment implements Client.OnMessageReceivedListener {
     private ArrayAdapter mAdapter;
+    private Handler mHandler;
 
     protected abstract int getLayoutResource();
 
@@ -25,6 +27,8 @@ public abstract class BaseFragment extends Fragment implements Observer {
 
         mAdapter = new ArrayAdapter<>(getActivity(),R.layout.message_log_row_layout,
                 new ArrayList<String>());
+
+        mHandler = new Handler();
     }
 
     @Override
@@ -36,10 +40,13 @@ public abstract class BaseFragment extends Fragment implements Observer {
     }
 
     @Override
-    public void update(Observable observable, Object data) {
-        if (data instanceof String) {
-            String message = (String) data;
-            mAdapter.add(message);
+    public void onMessageReceived(final String message) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mAdapter.add(message);
+                }
+            });
         }
     }
 }

@@ -15,11 +15,7 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onStart(String address, int port, String nickname) {
-        if (mClientToServerInteractor.connectToServer(address, port, nickname)) {
-            mClientToServerInteractor.addObserver(super.mView.getFragment());
-        } else {
-            // Error connecting to server
-        }
+        mClientToServerInteractor.connectToServer(address, port, nickname, super.mView.getFragment());
     }
 
     @Override
