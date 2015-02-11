@@ -10,12 +10,11 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 
 import com.example.ianjavier.project1.R;
+import com.example.ianjavier.project1.domain.OnMessageReceivedListener;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
-public abstract class BaseFragment extends Fragment implements Client.OnMessageReceivedListener {
+public abstract class BaseFragment extends Fragment implements OnMessageReceivedListener {
     private ArrayAdapter mAdapter;
     private Handler mHandler;
 
@@ -41,12 +40,11 @@ public abstract class BaseFragment extends Fragment implements Client.OnMessageR
 
     @Override
     public void onMessageReceived(final String message) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mAdapter.add(message);
-                }
-            });
-        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.add(message);
+            }
+        });
     }
 }

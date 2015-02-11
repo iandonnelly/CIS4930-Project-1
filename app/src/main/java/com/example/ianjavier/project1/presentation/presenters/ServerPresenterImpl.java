@@ -1,11 +1,11 @@
 package com.example.ianjavier.project1.presentation.presenters;
 
-import com.example.ianjavier.project1.domain.ServerToClientsInteractor;
-import com.example.ianjavier.project1.domain.ServerToClientsInteractorImpl;
+import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractor;
+import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractorImpl;
+import com.example.ianjavier.project1.domain.utils.NetworkHelper;
 import com.example.ianjavier.project1.presentation.views.BaseView;
 
-public class ServerPresenterImpl extends BasePresenterImpl implements
-        ServerPresenter {
+public class ServerPresenterImpl extends BasePresenterImpl implements ServerPresenter {
     private ServerToClientsInteractor mServerToClientsInteractor;
 
     public ServerPresenterImpl(BaseView view) {
@@ -15,7 +15,8 @@ public class ServerPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onStart(String name, int port) {
-        mServerToClientsInteractor.startServer(name, port, super.mView.getFragment());
+        super.mView.setActionBarTitle(NetworkHelper.getIPv4Address());
+        mServerToClientsInteractor.startServer(port, super.mView.getFragment());
     }
 
     @Override

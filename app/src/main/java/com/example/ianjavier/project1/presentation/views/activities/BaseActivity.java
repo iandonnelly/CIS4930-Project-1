@@ -141,4 +141,9 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
     public BaseFragment getFragment() {
         return (BaseFragment) mFragment;
     }
+
+    @Override
+    public void setActionBarTitle(String title) {
+        setTitle(title);
+    }
 }

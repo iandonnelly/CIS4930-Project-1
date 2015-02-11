@@ -1,12 +1,13 @@
 package com.example.ianjavier.project1.presentation.presenters;
 
-import com.example.ianjavier.project1.domain.ClientToServerInteractor;
-import com.example.ianjavier.project1.domain.ClientToServerInteractorImpl;
+import com.example.ianjavier.project1.domain.interactors.ClientToServerInteractor;
+import com.example.ianjavier.project1.domain.interactors.ClientToServerInteractorImpl;
 import com.example.ianjavier.project1.presentation.views.BaseView;
 
 public class ClientPresenterImpl extends BasePresenterImpl implements
         ClientPresenter {
     private ClientToServerInteractor mClientToServerInteractor;
+    private String mNickname;
 
     public ClientPresenterImpl(BaseView view) {
         super(view);
@@ -15,18 +16,20 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onStart(String address, int port, String nickname) {
-        mClientToServerInteractor.connectToServer(address, port, nickname, super.mView.getFragment());
+        mNickname = nickname;
+        super.mView.setActionBarTitle(address);
+        mClientToServerInteractor.connectToServer(address, port, mNickname, super.mView.getFragment());
     }
 
     @Override
     public void onDisconnectDialogPositiveClicked() {
-        mClientToServerInteractor.disconnectFromServer();
+        mClientToServerInteractor.disconnectFromServer(mNickname);
         super.onDisconnectDialogPositiveClicked();
     }
 
     @Override
     public void onServerErrorDialogPositiveClicked() {
-        mClientToServerInteractor.disconnectFromServer();
+        mClientToServerInteractor.disconnectFromServer(mNickname);
         super.onServerErrorDialogPositiveClicked();
     }
 
