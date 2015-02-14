@@ -53,6 +53,9 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
             mView.removeTab(mView.getCurrentTabPosition());
             mClientModel.removeChannel(mView.getCurrentTabPosition() - 1);
             return true;
+        } else if (id == R.id.action_user_list) {
+            mClientToServerInteractor.requestUserList();
+            return true;
         }
         return super.onOptionsItemSelected(id);
     }
@@ -89,17 +92,6 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
         }
     }
 
-    @Override
-    public void onDisconnectDialogPositiveClicked() {
-        mClientModel.addStatusMessage("Connection terminated");
-        mClientToServerInteractor.disconnectFromServer();
-    }
-
-    @Override
-    public void onExitDialogPositiveClicked() {
-        mClientModel.addStatusMessage("Connection terminated");
-        mClientToServerInteractor.disconnectFromServer();
-    }
 
     @Override
     public void onTabChanged(int position, BaseFragment tab) {
@@ -117,6 +109,18 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
             mClientModel.getChannel(position - 1).addObserver(tab);
             ((ClientView) mView).showLeaveChannelAction();
         }
+    }
+
+    @Override
+    public void onDisconnectDialogPositiveClicked() {
+        mClientModel.addStatusMessage("Connection terminated");
+        mClientToServerInteractor.disconnectFromServer();
+    }
+
+    @Override
+    public void onExitDialogPositiveClicked() {
+        mClientModel.addStatusMessage("Connection terminated");
+        mClientToServerInteractor.disconnectFromServer();
     }
 
     @Override
@@ -141,6 +145,11 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
     }
 
     @Override
+    public void onServerClosedDialogPositiveClicked() {
+        mView.navigateToHome();
+    }
+
+    @Override
     public void onConnectToServerSuccess() {
         mClientModel.addStatusMessage("Connection established");
     }
@@ -158,12 +167,17 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onServerClosed() {
-        mView.navigateToHome();
+        ((ClientView) mView).showServerClosedDialog();
     }
 
     @Override
     public void onServerError() {
         mView.showServerErrorDialog();
+    }
+
+    @Override
+    public void onFinishedLoadingUserList(String[] userList) {
+        mView.showUserListDialog(userList);
     }
 
     @Override

@@ -28,6 +28,11 @@
     </group>
 
     <item
+        android:id="@+id/action_user_list"
+        android:title="@string/action_user_list"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never" />

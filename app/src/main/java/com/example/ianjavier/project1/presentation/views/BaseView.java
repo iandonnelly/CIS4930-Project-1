@@ -9,6 +9,7 @@ public interface BaseView {
     public void addTab(String channel);
     public void removeTab(int position);
     public int getCurrentTabPosition();
+    public void showUserListDialog(String[] userList);
     public void showDisconnectDialog();
     public void showServerErrorDialog();
     public void showExitDialog();

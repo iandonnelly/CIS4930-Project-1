@@ -24,4 +24,10 @@ public class ServerToClientsInteractorImpl implements ServerToClientsInteractor 
     public boolean isServerStarted() {
         return (mThread != null && mThread.isAlive());
     }
+
+    public void requestUserList(ThreadedServer.ServerListener listener) {
+        if (isServerStarted()) {
+            ThreadedServer.getUserList(listener);
+        }
+    }
 }

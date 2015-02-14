@@ -23,6 +23,10 @@ public class ClientToServerInteractorImpl implements ClientToServerInteractor {
         Client.sendMessage("#" + channel + " " + message);
     }
 
+    public void requestUserList() {
+        Client.getUserList();
+    }
+
     @Override
     public void joinChannel(String channel) {
         Client.joinChannel(channel);

@@ -1,6 +1,7 @@
 package com.example.ianjavier.project1.presentation.views.activities;
 
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.views.BaseView;
+import com.example.ianjavier.project1.presentation.views.dialogs.UserListDialogFragment;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
 
@@ -107,6 +109,23 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
     }
 
     @Override
+    public void showUserListDialog(final String[] userList) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                DialogFragment dialog = new UserListDialogFragment();
+
+                // Pass user list
+                Bundle args = new Bundle();
+                args.putStringArray(getString(R.string.user_list), userList);
+                dialog.setArguments(args);
+
+                dialog.show(getFragmentManager(), "UserListDialogFragment");
+            }
+        });
+    }
+
+    @Override
     public void showDisconnectDialog() {
         new AlertDialog.Builder(this)
                 .setTitle(getDisconnectTitle())
@@ -133,6 +152,7 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
                                 mPresenter.onServerErrorDialogPositiveClicked();
                             }
                         })
+                        .setCancelable(false)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }

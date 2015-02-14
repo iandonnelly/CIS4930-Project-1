@@ -14,6 +14,9 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Client {
     public interface ClientListener {
@@ -23,6 +26,7 @@ public class Client {
         public void onServerClosed();
         public void onMessageReceived(String message, String channel, Message.MessageType messageType);
         public void onServerError();
+        public void onFinishedLoadingUserList(String[] userList);
     }
 
     static Socket clientSocket = null;
@@ -60,10 +64,11 @@ public class Client {
             clientListener.onConnectToServerFailure();
         }
     }
+
     public static void disconnectFromServer(){
         try{
             printWriter.println("STATUS" + username + " has disconnected from the server.");
-            printWriter.println("DISCONNECT");
+            printWriter.println("DISCONNECT " + username);
 
             //Check for error
             if(printWriter.checkError()) {
@@ -103,6 +108,15 @@ public class Client {
         }
     }
 
+    public static void getUserList() {
+        printWriter.println("USER LIST");
+
+        //Check for error
+        if(printWriter.checkError()) {
+            Log.d("Client", "An error occurred when sending message.");
+        }
+    }
+
     //Send message
     public static void sendMessage(String message){
         if(message != null && !message.isEmpty()){
@@ -132,6 +146,7 @@ public class Client {
             public void run() {
                 initConnection(server, port, name, listener);
 
+                printWriter.println("NICK " + name);
                 printWriter.println("STATUS " + name + " has connected to the server.");
 
                 //Check for error
@@ -158,6 +173,16 @@ public class Client {
                         if (message.startsWith("CLOSE")) {
                             closed = true;
                             clientListener.onServerClosed();
+                        } else if (message.startsWith("USER LIST")) {
+                            message = message.substring(10);
+
+                            // Remove own user name
+                            String[] userList = message.split("\\s");
+                            List<String> list = new ArrayList<String>(Arrays.asList(userList));
+                            list.remove(username);
+                            userList = list.toArray(new String[0]);
+
+                            listener.onFinishedLoadingUserList(userList);
                         } else if (message.startsWith("STATUS")) {
                             message = message.substring(message.indexOf(" ") + 1);
 

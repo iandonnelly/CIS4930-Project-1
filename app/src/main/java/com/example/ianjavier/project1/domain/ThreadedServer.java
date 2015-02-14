@@ -3,7 +3,9 @@ package com.example.ianjavier.project1.domain;
 import android.util.Log;
 
 import com.example.ianjavier.project1.presentation.model.Message;
+import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ThreadedServer {
     public interface ServerListener {
@@ -21,14 +24,17 @@ public class ThreadedServer {
         public void onMessageReceived(String message, String channel, Message.MessageType messageType);
         public void newChannel(String channel);
         public void deleteChannel(String channel);
+        public void onFinishedLoadingUserList(String[] userList);
     }
 
     private static ServerSocket serverSocket = null;
     private static HashMultimap<String, PrintWriter> channels = HashMultimap.create();
+    private static List<String> userList;
 
     public static void startServer(int port, ServerListener listener){
         try{
             serverSocket = new ServerSocket(port);
+            userList = new ArrayList<>();
             listener.onServerStarted();
         } catch (IOException ioEx){
         }
@@ -56,6 +62,10 @@ public class ThreadedServer {
         }
         serverSocket = null;
         listener.onServerStopped();
+    }
+
+    public static void getUserList(ServerListener listener) {
+        listener.onFinishedLoadingUserList(userList.toArray(new String[0]));
     }
 
     private static class Server extends Thread {
@@ -89,11 +99,22 @@ public class ThreadedServer {
                     }
 
 
-                    Log.i("Server", input);
 
                     //If disconnect message
                     if (input.startsWith("DISCONNECT")) {
                         disconnect = true;
+
+                        userList.remove(input.substring(input.indexOf(" ") + 1));
+                    // If selecting a nickname
+                    } else if (input.startsWith("NICK")) {
+                        userList.add(input.substring(input.indexOf(" ") + 1));
+
+                    // User list request
+                    } else if (input.startsWith("USER LIST")) {
+                        String list = Joiner.on(" ").join(userList);
+                        list = "USER LIST " + list;
+
+                        printWriter.println(list);
                     }
                     //If JOIN message
                     else if (input.startsWith("JOIN")){

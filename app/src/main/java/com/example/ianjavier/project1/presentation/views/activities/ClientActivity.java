@@ -1,6 +1,8 @@
 package com.example.ianjavier.project1.presentation.views.activities;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.example.ianjavier.project1.R;
@@ -61,6 +63,26 @@ public class ClientActivity extends BaseActivity implements ClientView,
     public void showJoinChannelDialog() {
         DialogFragment dialog = new JoinChannelDialogFragment();
         dialog.show(getFragmentManager(), "JoinChannelDialogFragment");
+    }
+
+    @Override
+    public void showServerClosedDialog() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(ClientActivity.this)
+                        .setTitle(getString(R.string.server_closed_title))
+                        .setMessage(getString(R.string.server_closed_message))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                ((ClientPresenter) mPresenter).onServerClosedDialogPositiveClicked();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .setCancelable(false)
+                        .show();
+            }
+        });
     }
 
     @Override

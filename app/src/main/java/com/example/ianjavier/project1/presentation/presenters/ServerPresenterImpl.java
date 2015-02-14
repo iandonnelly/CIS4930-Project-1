@@ -1,5 +1,6 @@
 package com.example.ianjavier.project1.presentation.presenters;
 
+import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.domain.ThreadedServer;
 import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractor;
 import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractorImpl;
@@ -42,6 +43,10 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
 
     @Override
     public boolean onOptionsItemSelected(int id) {
+        if (id == R.id.action_user_list) {
+            mServerToClientsInteractor.requestUserList(this);
+            return true;
+        }
         return super.onOptionsItemSelected(id);
     }
 
@@ -116,6 +121,11 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
         mServerModel.getPosition(channel);
         mView.removeTab(mServerModel.getPosition(channel) + 1);
         mServerModel.removeChannel(channel);
+    }
+
+    @Override
+    public void onFinishedLoadingUserList(String[] userList) {
+        mView.showUserListDialog(userList);
     }
 
     @Override
