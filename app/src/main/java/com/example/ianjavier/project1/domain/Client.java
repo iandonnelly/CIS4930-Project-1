@@ -27,6 +27,7 @@ public class Client {
     static PrintWriter printWriter = null;
     static String username;
     //Takes ip address and port of server and attempts to open a socket
+
     public static void initConnection(String server, int port, String name){
         username = name;
         try{
@@ -48,13 +49,17 @@ public class Client {
             Log.e("Client", ioEx.getLocalizedMessage(), ioEx);
         }
     }
-    public static void disconnectFromServer(String name){
+    public static void disconnectFromServer(String name, ClientListener clientListener){
         try{
-            sendMessage(name + " has disconnected from the server.");
+            printWriter.println("STATUS " + name + " has disconnected from the server.");
+            if(printWriter.checkError()){
+                Log.d("Client", "An error occurred when sending message.");
+            }
             if(clientSocket != null){
                 clientSocket.shutdownInput();
                 clientSocket.shutdownOutput();
                 clientSocket.close();
+                clientListener.onDisconnectedFromServer();
             }
         } catch (IOException ioEx) {
             Log.e("Client", ioEx.getLocalizedMessage(), ioEx);
@@ -95,29 +100,47 @@ public class Client {
     }
     }*/
     //Runnable to use from UI
-    public static Runnable clientRunnable(final String server, final int port, final String name, final OnMessageReceivedListener messageListener){
+    public static Runnable clientRunnable(final String server, final int port, final String name,
+                                          final ClientListener clientListener){
         return new Runnable() {
             @Override
             public void run() {
                 initConnection(server, port, name);
-                sendMessage(name + " has connected to the server.");
+                printWriter.println("STATUS " + name + " has connected to the server.");
+                if (printWriter.checkError()) {
+                    Log.d("Client", "An error occurred when sending message.");
+                }
                 //validateName(nameListener);
                 //Unable to connect to server
-                if(clientSocket == null)
+                if (clientSocket == null) {
+                    clientListener.onConnectToServerFailure();
                     return;
+                } else {
+                    clientListener.onConnectToServerSuccess();
+                }
                 //Try some message stuff
                 try {
                     String stringBuffer = null;
                     stringBuffer = readerBuffer.readLine();
-                    while (stringBuffer != null) {
+                    while (stringBuffer != null && !Thread.currentThread().isInterrupted()) {
                         String message = stringBuffer;
-                        messageListener.onMessageReceived(message);
+
+                        if (message.startsWith("STATUS")) {
+                            //messageListener.onMessageReceived(message.substring(7, message.length()),
+                              //      OnMessageReceivedListener.MessageType.STATUS);
+                        } else if (message.startsWith(name)) {
+                            //messageListener.onMessageReceived(message,
+                             //       OnMessageReceivedListener.MessageType.CURRENT_USER);
+                        } else {
+                            //messageListener.onMessageReceived(message,
+                             //       OnMessageReceivedListener.MessageType.OTHER_USER);
+                        }
                         stringBuffer = readerBuffer.readLine();
                     }
                 } catch (IOException ioEx) {
                     Log.e("Client", ioEx.getLocalizedMessage(), ioEx);
-                }
-            }
-        };
-    }
+                 }
+             }
+         };
+     }
 }

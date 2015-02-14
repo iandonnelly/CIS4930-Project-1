@@ -29,22 +29,13 @@ public abstract class BasePresenterImpl implements BasePresenter {
     }
 
     @Override
-    public void onBackPressed() {
-        mView.showDisconnectDialog();
-    }
-
-    @Override
-    public void onDisconnectDialogPositiveClicked() {
-        mView.navigateToHome();
-    }
-
-    @Override
     public void onServerErrorDialogPositiveClicked() {
         mView.navigateToHome();
     }
 
     @Override
-    public void onExitDialogPositiveClicked() {
-        mView.exitApp();
+    public void onBackPressed() {
+        mView.showDisconnectDialog();
     }
+
 }

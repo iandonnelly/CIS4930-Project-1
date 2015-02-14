@@ -1,17 +1,16 @@
 package com.example.ianjavier.project1.presentation.views.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.presenters.ServerPresenter;
 import com.example.ianjavier.project1.presentation.presenters.ServerPresenterImpl;
-import com.example.ianjavier.project1.presentation.views.fragments.ServerFragment;
+import com.example.ianjavier.project1.presentation.views.ServerView;
+import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
+import com.example.ianjavier.project1.presentation.views.fragments.ServerTabsFragment;
 
-public class ServerActivity extends BaseActivity {
-
-
+public class ServerActivity extends BaseActivity implements ServerView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,9 +20,8 @@ public class ServerActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
 
-        String name = getIntent().getStringExtra(getString(R.string.name));
+        String name = getIntent().getStringExtra(getString(R.string.server_name));
         int port = getIntent().getIntExtra(getString(R.string.port), 0);
-
 
         ((ServerPresenter) super.mPresenter).onStart(name, port);
     }
@@ -39,8 +37,8 @@ public class ServerActivity extends BaseActivity {
     }
 
     @Override
-    protected Fragment getViewFragment() {
-        return new ServerFragment();
+    protected BaseTabFragment getViewFragment() {
+        return ServerTabsFragment.newInstance(getIntent().getStringExtra(getString(R.string.server_name)));
     }
 
     @Override
@@ -53,6 +51,14 @@ public class ServerActivity extends BaseActivity {
         return getString(R.string.server_disconnect_message);
     }
 
+    @Override
+    public void hideJoinChannelAction() {
+        mMenu.setGroupVisible(R.id.leave_channel_group, false);
+    }
 
+    @Override
+    public void hideLeaveChannelAction() {
+        mMenu.setGroupVisible(R.id.join_channel_group, false);
+    }
 }
 

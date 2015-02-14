@@ -15,25 +15,36 @@ public class ThreadedServer extends Thread {
     //Keep track of names and printWriters
     //private static HashSet<String> names = new HashSet<String>();
     private static HashSet<PrintWriter> printWriters = new HashSet<PrintWriter>();
-    public static void startServer(int port, OnMessageReceivedListener receivedListener){
+
+    public static void startServer(int port, ServerListener serverListener){
         try{
             serverSocket = new ServerSocket(port);
+
+            if (serverSocket != null) {
+                serverListener.onServerStartedSuccess();
+            } else {
+                serverListener.onServerStartedFailure();
+            }
         } catch (IOException ioEx){
             Log.e("Server", ioEx.getLocalizedMessage(), ioEx);
         }
         //Listens for new connections, launches a new thread when a new client connects
         try{
-            while (true) {
-                new Server(serverSocket.accept(), receivedListener).start();
+            while (true && !Thread.currentThread().isInterrupted()) {
+                new Server(serverSocket.accept()).start();
             }
         } catch(IOException ioEx){
             Log.e("Server", ioEx.getLocalizedMessage(), ioEx);
         }
     }
-    public static void stopServer(){
+    public static void stopServer(ServerListener serverListener){
         try{
             if(serverSocket != null){
+                for (PrintWriter printWriter : printWriters){
+                    printWriter.println("Server closed");
+                }
                 serverSocket.close();
+                serverListener.onServerStopped();
             }
         } catch (IOException ioEx){
             Log.e("Server", ioEx.getLocalizedMessage(), ioEx);
@@ -45,11 +56,11 @@ public class ThreadedServer extends Thread {
         private Socket socket;
         private BufferedReader readerBuffer;
         private PrintWriter printWriter;
-        private OnMessageReceivedListener receivedListener;
-        public Server(Socket socket, OnMessageReceivedListener receivedListener) {
+
+        public Server(Socket socket) {
             this.socket = socket;
-            this.receivedListener = receivedListener;
         }
+
         public void run(){
             try{
                 readerBuffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -76,7 +87,14 @@ public class ThreadedServer extends Thread {
                     if(input == null){
                         return;
                     }
-                    receivedListener.onMessageReceived(input);
+
+                    if (input.startsWith("STATUS")) {
+                        //receivedListener.onMessageReceived(input.substring(7, input.length()),
+                               // OnMessageReceivedListener.MessageType.STATUS);
+                    } else {
+                        //receivedListener.onMessageReceived(input,
+                                //OnMessageReceivedListener.MessageType.OTHER_USER);
+                    }
                     for (PrintWriter printWriter : printWriters){
                         printWriter.println(input);
                     }
@@ -89,11 +107,6 @@ public class ThreadedServer extends Thread {
                 }*/
                 if (printWriter != null) {
                     printWriters.remove(printWriter);
-                }
-                try{
-                    serverSocket.close();
-                } catch (IOException ioEx){
-                    Log.e("Server", ioEx.getLocalizedMessage(), ioEx);
                 }
             }
         }

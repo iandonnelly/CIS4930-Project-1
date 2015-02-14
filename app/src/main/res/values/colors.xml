@@ -3,4 +3,8 @@
     <color name="primary">#099909</color>
     <color name="primary_dark">#077A07</color>
     <color name="accent">#FF6D00</color>
+
+    <color name="message_status">#F44336</color>
+    <color name="message_current_user">#2196F3</color>
+    <color name="message_other_user">#9E9E9E</color>
 </resources>

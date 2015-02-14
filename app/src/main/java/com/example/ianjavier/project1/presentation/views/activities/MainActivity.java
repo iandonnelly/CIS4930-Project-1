@@ -61,7 +61,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onCreateServerDialogPositiveClicked(String name, int port) {
         Intent intent = new Intent(this, ServerActivity.class);
-        intent.putExtra(getString(R.string.name), name);
+        intent.putExtra(getString(R.string.server_name), name);
         intent.putExtra(getString(R.string.port), port);
         startActivity(intent);
         finish();

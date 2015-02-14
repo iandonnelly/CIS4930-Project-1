@@ -42,7 +42,7 @@ public class CreateServerDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         // Get input fields
-                        EditText nameField = (EditText) view.findViewById(R.id.name);
+                        EditText nameField = (EditText) view.findViewById(R.id.server_name);
                         EditText portField = (EditText) view.findViewById(R.id.port);
 
                         // Get inputted values

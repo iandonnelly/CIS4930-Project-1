@@ -1,17 +1,20 @@
 package com.example.ianjavier.project1.presentation.views.activities;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.presenters.ClientPresenter;
 import com.example.ianjavier.project1.presentation.presenters.ClientPresenterImpl;
-import com.example.ianjavier.project1.presentation.views.ClientFragmentListener;
-import com.example.ianjavier.project1.presentation.views.fragments.ClientFragment;
+import com.example.ianjavier.project1.presentation.views.ClientChannelListener;
+import com.example.ianjavier.project1.presentation.views.ClientView;
+import com.example.ianjavier.project1.presentation.views.dialogs.JoinChannelDialogFragment;
+import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
+import com.example.ianjavier.project1.presentation.views.fragments.ClientTabsFragment;
 
-public class ClientActivity extends BaseActivity implements
-        ClientFragmentListener {
+public class ClientActivity extends BaseActivity implements ClientView,
+        JoinChannelDialogFragment.JoinChannelDialogListener, ClientChannelListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +43,8 @@ public class ClientActivity extends BaseActivity implements
     }
 
     @Override
-    protected Fragment getViewFragment() {
-        return new ClientFragment();
+    protected BaseTabFragment getViewFragment() {
+        return ClientTabsFragment.newInstance(getIntent().getStringExtra(getString(R.string.address)));
     }
 
     @Override
@@ -55,8 +58,28 @@ public class ClientActivity extends BaseActivity implements
     }
 
     @Override
-    public void onSendMessageClicked(String message) {
-        ((ClientPresenter) super.mPresenter).onSendMessageClicked(message);
+    public void showJoinChannelDialog() {
+        DialogFragment dialog = new JoinChannelDialogFragment();
+        dialog.show(getFragmentManager(), "JoinChannelDialogFragment");
     }
 
+    @Override
+    public void hideLeaveChannelAction() {;
+        mMenu.setGroupVisible(R.id.leave_channel_group, false);
+    }
+
+    @Override
+    public void showLeaveChannelAction() {
+        mMenu.setGroupVisible(R.id.leave_channel_group, true);
+    }
+
+    @Override
+    public void onJoinChannelDialogPositiveClicked(String channel) {
+        ((ClientPresenter) super.mPresenter).onJoinChannelDialogPositiveClicked(channel);
+    }
+
+    @Override
+    public void onSendMessageClicked(String message) {
+        ((ClientPresenter) mPresenter).onSendMessageClicked(message);
+    }
 }

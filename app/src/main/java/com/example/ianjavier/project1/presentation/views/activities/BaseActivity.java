@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,15 +14,20 @@ import android.view.WindowManager;
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.views.BaseView;
+import com.example.ianjavier.project1.presentation.views.TabListener;
+import com.example.ianjavier.project1.presentation.views.OnTabChangedListener;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
+import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
 
-public abstract class BaseActivity extends ActionBarActivity implements BaseView {
+public abstract class BaseActivity extends ActionBarActivity implements BaseView,
+        OnTabChangedListener, TabListener {
     protected BasePresenter mPresenter;
-    protected Fragment mFragment;
+    protected BaseTabFragment mTabFragment;
+    protected Menu mMenu;
 
     protected abstract int getLayoutResource();
     protected abstract BasePresenter getPresenter();
-    protected abstract Fragment getViewFragment();
+    protected abstract BaseTabFragment getViewFragment();
     protected abstract String getDisconnectTitle();
     protected abstract String getDisconnectMessage();
 
@@ -39,11 +43,11 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Add the client fragment
+        // Add the tab fragment
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            mFragment = getViewFragment();
-            transaction.replace(R.id.fragment, mFragment);
+            mTabFragment = getViewFragment();
+            transaction.replace(R.id.fragment, mTabFragment);
             transaction.commit();
         }
 
@@ -53,17 +57,15 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        mPresenter.onCreateOptionsMenu();
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mPresenter.onOptionsItemSelected(item.getItemId())) {
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+        return (mPresenter.onOptionsItemSelected(item.getItemId()) || super.onOptionsItemSelected(item));
     }
 
     @Override
@@ -138,12 +140,42 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
     }
 
     @Override
-    public BaseFragment getFragment() {
-        return (BaseFragment) mFragment;
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
-    public void setActionBarTitle(String title) {
-        setTitle(title);
+    public void setActionBarSubtitle(String subtitle) {
+        getSupportActionBar().setSubtitle(subtitle);
+    }
+
+    @Override
+    public void addTab(String channel) {
+        mTabFragment.addTab(channel);
+    }
+
+    @Override
+    public void removeTab() {
+        mTabFragment.removeTab();
+    }
+
+    @Override
+    public void onTabChanged(int position) {
+        mPresenter.onTabChanged(position, mTabFragment.getTab(position));
+    }
+
+    @Override
+    public void onCreateTabView() {
+        mPresenter.onCreateTabView();
+    }
+
+    @Override
+    public BaseFragment getCurrentTab() {
+        return mTabFragment.getCurrentTab();
+    }
+
+    @Override
+    public int getCurrentTabPosition() {
+        return mTabFragment.getCurrentTabPosition();
     }
 }

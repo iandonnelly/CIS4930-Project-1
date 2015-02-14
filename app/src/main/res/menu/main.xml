@@ -9,6 +9,24 @@
         android:icon="@drawable/ic_action_disconnect"
         app:showAsAction="ifRoom"/>
 
+    <group
+        android:id="@+id/join_channel_group">
+        <item
+            android:id="@+id/action_join_channel"
+            android:title="@string/action_join_channel"
+            android:icon="@drawable/ic_action_join_channel"
+            app:showAsAction="ifRoom"/>
+    </group>
+
+    <group
+        android:id="@+id/leave_channel_group">
+        <item
+            android:id="@+id/action_leave_channel"
+            android:title="@string/action_leave_channel"
+            android:icon="@drawable/ic_action_leave_channel"
+            app:showAsAction="ifRoom"/>
+    </group>
+
     <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
