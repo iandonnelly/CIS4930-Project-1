@@ -1,27 +1,32 @@
 package com.example.ianjavier.project1.presentation.presenters;
 
-import com.example.ianjavier.project1.domain.ServerListener;
+import android.util.Log;
+
+import com.example.ianjavier.project1.domain.ThreadedServer;
 import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractor;
+import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractorImpl;
 import com.example.ianjavier.project1.domain.utils.NetworkHelper;
+import com.example.ianjavier.project1.presentation.model.Channel;
+import com.example.ianjavier.project1.presentation.model.Message;
 import com.example.ianjavier.project1.presentation.model.ServerModel;
 import com.example.ianjavier.project1.presentation.views.BaseView;
 import com.example.ianjavier.project1.presentation.views.ServerView;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
 
 public class ServerPresenterImpl extends BasePresenterImpl implements ServerPresenter,
-        ServerListener {
+        ThreadedServer.ServerListener {
     private ServerToClientsInteractor mServerToClientsInteractor;
     private ServerModel mServerModel;
 
     public ServerPresenterImpl(BaseView view) {
        super(view);
-        //mServerToClientsInteractor = new ServerToClientsInteractorImpl();
+        mServerToClientsInteractor = new ServerToClientsInteractorImpl();
         mServerModel = new ServerModel();
     }
 
     @Override
     public void onStart(String name, int port) {
-        //if (!mServerToClientsInteractor.isServerStarted()) {
+        if (!mServerToClientsInteractor.isServerStarted()) {
             // Update the server model
             mServerModel.setName(name);
             mServerModel.setPort(port);
@@ -29,11 +34,12 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
             // Update the view
             mView.setActionBarTitle(name);
             mView.setActionBarSubtitle(NetworkHelper.getIPv4Address() + ":" + port);
+
             mServerModel.addStatusMessage("Starting server");
 
             // Start the server
-            //mServerToClientsInteractor.startServer(port);
-        //}
+            mServerToClientsInteractor.startServer(port, this);
+        }
     }
 
     @Override
@@ -57,6 +63,7 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
             // Set the status message log and add the view as an observer to the status message log
             currentTab.setMessageLog(mServerModel.getStatusMessageLog());
             mServerModel.addObserver(currentTab);
+            Log.i("TAB", "Setting observer");
         } else {
             // Set the message log and add the view as an observer to the message log
             currentTab.setMessageLog(mServerModel.getChannel(currentTabPosition - 1).getMessageLog());
@@ -66,15 +73,14 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
 
     // @Override
     public void onDisconnectDialogPositiveClicked() {
-        //super.mView.getFragment().onMessageReceived("Stopping server",
-        //        OnMessageReceivedListener.MessageType.STATUS);
-        //mServerToClientsInteractor.stopServer(this);
+        mServerModel.addStatusMessage("Stopping server");
+        mServerToClientsInteractor.stopServer(this);
     }
 
     @Override
     public void onExitDialogPositiveClicked() {
         mServerModel.addStatusMessage("Stopping server");
-        //mServerInteractor.disconnectFromServer(this);
+        mServerToClientsInteractor.stopServer(this);
     }
 
     @Override
@@ -94,18 +100,41 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
     }
 
     @Override
-    public void onServerStartedSuccess() {
+    public void onServerStarted() {
         mServerModel.addStatusMessage("Server started");
-    }
-
-    @Override
-    public void onServerStartedFailure() {
-        mView.showServerErrorDialog();
     }
 
    @Override
     public void onServerStopped() {
        mServerModel.addStatusMessage("Server stopped");
        mView.navigateToHome();
+    }
+
+    @Override
+    public void onServerError() {
+        mView.showServerErrorDialog();
+    }
+
+    @Override
+    public void onMessageReceived(String message, String channel, Message.MessageType messageType) {
+        Log.i("Message Received", message);
+
+        if (channel == null && messageType == null) {
+            mServerModel.addStatusMessage(message);
+        } else {
+            mServerModel.getChannel(channel).addMessage(new Message(message, messageType));
+        }
+    }
+
+    @Override
+    public void newChannel(String channel) {
+        mServerModel.addChannel(new Channel(channel));
+        mView.addTab(mServerModel.getLastChannel().getName());
+    }
+
+    @Override
+    public void deleteChannel(String channel) {
+        mServerModel.removeChannel(channel);
+        mView.removeTab();
     }
 }

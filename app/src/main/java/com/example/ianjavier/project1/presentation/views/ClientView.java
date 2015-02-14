@@ -4,4 +4,5 @@ public interface ClientView extends BaseView {
     public void showJoinChannelDialog();
     public void hideLeaveChannelAction();
     public void showLeaveChannelAction();
+    public void setCurrentTab(int position);
 }

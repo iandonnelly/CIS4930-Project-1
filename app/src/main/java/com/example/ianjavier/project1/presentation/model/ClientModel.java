@@ -40,16 +40,16 @@ public class ClientModel extends Observable {
         mNickname = nickname;
     }
 
-    public void addStatusMessage(String message) {
+    public synchronized void addStatusMessage(String message) {
         mStatusMessageLog.add(new Message(message, Message.MessageType.STATUS));
         notifyObservers();
     }
 
-    public void addChannel(Channel channel) {
+    public synchronized void addChannel(Channel channel) {
         mChannelList.add(channel);
     }
 
-    public void removeChannel(int position) {
+    public synchronized void removeChannel(int position) {
         mChannelList.remove(position);
     }
 

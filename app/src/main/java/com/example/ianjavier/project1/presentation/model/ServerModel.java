@@ -24,25 +24,30 @@ public class ServerModel extends Observable {
         return mPort;
     }
 
-    public void setName(String name) {
+    public synchronized void setName(String name) {
         mName = name;
     }
 
-    public void setPort(int port) {
+    public synchronized void setPort(int port) {
         mPort = port;
     }
 
-    public void addStatusMessage(String message) {
+    public synchronized void addStatusMessage(String message) {
         mStatusMessageLog.add(new Message(message, Message.MessageType.STATUS));
+        setChanged();
         notifyObservers();
     }
 
-    public void addChannel(Channel channel) {
+    public synchronized void addChannel(Channel channel) {
         mChannelList.add(channel);
     }
 
-    public void removeChannel(int position) {
-        mChannelList.remove(position);
+    public synchronized void removeChannel(String channel) {
+        for (Channel c : mChannelList) {
+            if (c.getName().equals(channel)) {
+                mChannelList.remove(c);
+            }
+        }
     }
 
     public Channel getChannel(String channel) {

@@ -29,7 +29,7 @@ public class ClientActivity extends BaseActivity implements ClientView,
         int port = getIntent().getIntExtra(getString(R.string.port), 0);
         String nickname = getIntent().getStringExtra(getString(R.string.nickname));
 
-        ((ClientPresenter) super.mPresenter).onStart(address, port, nickname);
+        ((ClientPresenter) mPresenter).onStart(address, port, nickname);
     }
 
     @Override
@@ -74,8 +74,13 @@ public class ClientActivity extends BaseActivity implements ClientView,
     }
 
     @Override
+    public void setCurrentTab(int position) {
+        mTabFragment.setCurrentItem(position);
+    }
+
+    @Override
     public void onJoinChannelDialogPositiveClicked(String channel) {
-        ((ClientPresenter) super.mPresenter).onJoinChannelDialogPositiveClicked(channel);
+        ((ClientPresenter) mPresenter).onJoinChannelDialogPositiveClicked(channel);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,8 +15,8 @@ import android.view.WindowManager;
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.views.BaseView;
-import com.example.ianjavier.project1.presentation.views.TabListener;
 import com.example.ianjavier.project1.presentation.views.OnTabChangedListener;
+import com.example.ianjavier.project1.presentation.views.TabListener;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
 
@@ -24,6 +25,7 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
     protected BasePresenter mPresenter;
     protected BaseTabFragment mTabFragment;
     protected Menu mMenu;
+    protected Handler mHandler;
 
     protected abstract int getLayoutResource();
     protected abstract BasePresenter getPresenter();
@@ -53,6 +55,9 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
 
         // Initialize presenter
         mPresenter = getPresenter();
+
+        // Get handler
+        mHandler = new Handler();
     }
 
     @Override
@@ -114,16 +119,21 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
 
     @Override
     public void showServerErrorDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.server_error_title))
-                .setMessage(getString(R.string.server_error_message))
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mPresenter.onServerErrorDialogPositiveClicked();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(BaseActivity.this)
+                        .setTitle(getString(R.string.server_error_title))
+                        .setMessage(getString(R.string.server_error_message))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mPresenter.onServerErrorDialogPositiveClicked();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        });
     }
 
     @Override
@@ -150,13 +160,23 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
     }
 
     @Override
-    public void addTab(String channel) {
-        mTabFragment.addTab(channel);
+    public void addTab(final String channel) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTabFragment.addTab(channel);
+            }
+        });
     }
 
     @Override
     public void removeTab() {
-        mTabFragment.removeTab();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTabFragment.removeTab();
+            }
+        });
     }
 
     @Override

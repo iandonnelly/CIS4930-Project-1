@@ -1,8 +1,9 @@
 package com.example.ianjavier.project1.presentation.presenters;
 
 import com.example.ianjavier.project1.R;
-import com.example.ianjavier.project1.domain.ClientListener;
+import com.example.ianjavier.project1.domain.Client;
 import com.example.ianjavier.project1.domain.interactors.ClientToServerInteractor;
+import com.example.ianjavier.project1.domain.interactors.ClientToServerInteractorImpl;
 import com.example.ianjavier.project1.presentation.model.Channel;
 import com.example.ianjavier.project1.presentation.model.ClientModel;
 import com.example.ianjavier.project1.presentation.model.Message;
@@ -12,19 +13,19 @@ import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
 
 public class ClientPresenterImpl extends BasePresenterImpl implements
         ClientPresenter,
-        ClientListener {
-    private ClientToServerInteractor mServerInteractor;
+        Client.ClientListener {
+    private ClientToServerInteractor mClientToServerInteractor;
     private ClientModel mClientModel;
 
     public ClientPresenterImpl(BaseView view) {
         super(view);
-        //mServerInteractor = new ServerInteractorImpl();
+        mClientToServerInteractor = new ClientToServerInteractorImpl();
         mClientModel = new ClientModel();
     }
 
     @Override
     public void onStart(String address, int port, String nickname) {
-        //if (!mServerInteractor.isConnectionAlive()) {
+        if (!mClientToServerInteractor.isConnectionAlive()) {
             // Update client model
             mClientModel.setAddress(address);
             mClientModel.setNickname(nickname);
@@ -35,9 +36,8 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
             mClientModel.addStatusMessage("Attempting to establish a connection to " + address);
 
             // Connect to the server
-            // mServerInteractor.connectToServer(address, port, nickname, this);
-
-        //}
+            mClientToServerInteractor.connectToServer(address, port, nickname, this);
+        }
     }
 
     @Override
@@ -80,13 +80,13 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
     @Override
     public void onDisconnectDialogPositiveClicked() {
         mClientModel.addStatusMessage("Connection terminated");
-        //mServerInteractor.disconnectFromServer(this);
+        mClientToServerInteractor.disconnectFromServer();
     }
 
     @Override
     public void onExitDialogPositiveClicked() {
         mClientModel.addStatusMessage("Connection terminated");
-        //mServerInteractor.disconnectFromServer(this);
+        mClientToServerInteractor.disconnectFromServer();
     }
 
     @Override
@@ -109,16 +109,23 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onSendMessageClicked(String message) {
-        mServerInteractor.sendMessage(message,
+        mClientToServerInteractor.sendMessage(message,
                 mClientModel.getChannel(mView.getCurrentTabPosition()).getName());
     }
 
     @Override
     public void onJoinChannelDialogPositiveClicked(String channel) {
+        for (int i = 0; i < mClientModel.getChannelList().size(); i++) {
+            if (mClientModel.getChannel(i).getName().equals(channel)) {
+                ((ClientView) mView).setCurrentTab(i + 1);
+                return;
+            }
+        }
+
         mClientModel.addStatusMessage("Joining channel " + channel);
         mClientModel.addChannel(new Channel(channel));
-        onJoinChannelSuccess();
-        //mServerInteractor.joinChannel(channel);
+        mClientToServerInteractor.joinChannel(channel);
+        mView.addTab(mClientModel.getLastChannel().getName());
     }
 
     @Override
@@ -138,22 +145,9 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
     }
 
     @Override
-    public void onJoinChannelSuccess() {
-        mClientModel.getLastChannel().addMessage(new Message("joining channel", Message.MessageType.STATUS));
-        mView.addTab(mClientModel.getLastChannel().getName());
-    }
-
-    @Override
-    public void onJoinChannelFailure() {
-        mClientModel.removeChannel(mClientModel.getChannelList().size() - 1);
-        mClientModel.addStatusMessage("Failed to join channel");
-    }
-
-    @Override
     public void onServerClosed() {
         mView.navigateToHome();
     }
-
 
     @Override
     public void onServerError() {
@@ -162,7 +156,7 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onMessageReceived(String message, String channel, Message.MessageType messageType) {
-        if (channel.equals("SERVER STATUS")) {
+        if (channel == null && messageType == null) {
             mClientModel.addStatusMessage(message);
         } else {
             mClientModel.getChannel(channel).addMessage(new Message(message, messageType));

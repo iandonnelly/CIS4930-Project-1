@@ -23,6 +23,8 @@ public class Channel extends Observable {
 
     public void addMessage(Message message) {
         mMessageLog.add(message);
+        setChanged();
+        notifyObservers();
     }
 
     public List<Message> getMessageLog() {
