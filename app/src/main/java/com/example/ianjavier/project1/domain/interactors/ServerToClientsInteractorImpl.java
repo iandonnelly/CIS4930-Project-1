@@ -22,6 +22,6 @@ public class ServerToClientsInteractorImpl implements ServerToClientsInteractor 
     }
 
     public boolean isServerStarted() {
-        return (mThread != null && !mThread.isAlive());
+        return (mThread != null && mThread.isAlive());
     }
 }

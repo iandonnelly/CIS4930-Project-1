@@ -10,9 +10,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.ianjavier.project1.R;
-import com.example.ianjavier.project1.presentation.views.ClientChannelListener;
 
 public class ClientChannelFragment extends BaseFragment {
+    public interface ClientChannelListener {
+        public void onSendMessageClicked(String message);
+    }
+
+
     public final static BaseTabFragment.TabFactory TAB_FACTORY =
             new BaseTabFragment.TabFactory<ClientChannelFragment>() {
                 @Override

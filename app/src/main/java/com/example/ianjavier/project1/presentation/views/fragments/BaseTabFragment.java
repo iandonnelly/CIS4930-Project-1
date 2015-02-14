@@ -8,15 +8,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
-import com.example.ianjavier.project1.presentation.views.OnTabChangedListener;
 import com.example.ianjavier.project1.presentation.views.ViewTabs;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseTabFragment extends Fragment {
+    public interface OnTabChangedListener {
+        public void onTabChanged(int position);
+    }
+
     public  interface TabFactory<T extends BaseFragment> {
         public T newInstance(Bundle args);
     }
@@ -43,7 +45,7 @@ public abstract class BaseTabFragment extends Fragment {
             return mFragment;
         }
 
-        BaseFragment getFragment() { return mFragment; }
+        public BaseFragment getFragment() { return mFragment; }
 
         CharSequence getTitle() {
             return mTitle;
@@ -91,7 +93,6 @@ public abstract class BaseTabFragment extends Fragment {
 
         @Override
         public void onPageSelected(int position) {
-            Log.i("TAB", "Tab selected:" + position);
             mListener.onTabChanged(position);
         }
 
@@ -106,8 +107,8 @@ public abstract class BaseTabFragment extends Fragment {
 
     public abstract void addTab(String channel);
 
-    public void removeTab() {
-        mTabs.remove(mViewPager.getCurrentItem());
+    public void removeTab(int position) {
+        mTabs.remove(position);
         mViewPager.getAdapter().notifyDataSetChanged();
         mViewTabs.setViewPager(mViewPager);
         mViewTabs.setOnPageChangeListener((ViewPager.OnPageChangeListener) mViewPager.getAdapter());
@@ -119,10 +120,6 @@ public abstract class BaseTabFragment extends Fragment {
 
     public BaseFragment getTab(int position) {
         return mTabs.get(position).getFragment();
-    }
-
-    public BaseFragment getCurrentTab() {
-        return mTabs.get(mViewPager.getCurrentItem()).getFragment();
     }
 
     public int getCurrentTabPosition() {

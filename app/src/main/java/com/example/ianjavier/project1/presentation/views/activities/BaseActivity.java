@@ -15,13 +15,11 @@ import android.view.WindowManager;
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.views.BaseView;
-import com.example.ianjavier.project1.presentation.views.OnTabChangedListener;
-import com.example.ianjavier.project1.presentation.views.TabListener;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
 
 public abstract class BaseActivity extends ActionBarActivity implements BaseView,
-        OnTabChangedListener, TabListener {
+        BaseTabFragment.OnTabChangedListener, BaseFragment.BaseFragmentListener {
     protected BasePresenter mPresenter;
     protected BaseTabFragment mTabFragment;
     protected Menu mMenu;
@@ -58,6 +56,11 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
 
         // Get handler
         mHandler = new Handler();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -170,11 +173,11 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
     }
 
     @Override
-    public void removeTab() {
+    public void removeTab(final int position) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mTabFragment.removeTab();
+                mTabFragment.removeTab(position);
             }
         });
     }
@@ -184,14 +187,20 @@ public abstract class BaseActivity extends ActionBarActivity implements BaseView
         mPresenter.onTabChanged(position, mTabFragment.getTab(position));
     }
 
+
     @Override
-    public void onCreateTabView() {
-        mPresenter.onCreateTabView();
+    public void onResumeFragment() {
+        mPresenter.onResumeFragment(mTabFragment.getCurrentTabPosition());
     }
 
     @Override
-    public BaseFragment getCurrentTab() {
-        return mTabFragment.getCurrentTab();
+    public void onPauseFragment() {
+        mPresenter.onPauseFragment(mTabFragment.getCurrentTabPosition());
+    }
+
+    @Override
+    public BaseFragment getTab(int position) {
+        return mTabFragment.getTab(position);
     }
 
     @Override

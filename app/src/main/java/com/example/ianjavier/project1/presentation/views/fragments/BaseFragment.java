@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +14,21 @@ import android.widget.TextView;
 import com.example.ianjavier.project1.App;
 import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.model.Message;
-import com.example.ianjavier.project1.presentation.views.TabListener;
 
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 public abstract class BaseFragment extends Fragment implements Observer {
+    public interface BaseFragmentListener {
+        public void onPauseFragment();
+        public void onResumeFragment();
+    }
+
     private MessageAdapter mAdapter;
     private ListView mListView;
     private Handler mHandler;
-
-    protected TabListener mListener;
+    private BaseFragmentListener mListener;
 
     protected abstract int getLayoutResource();
 
@@ -41,8 +43,20 @@ public abstract class BaseFragment extends Fragment implements Observer {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutResource(), container, false);
         mListView = (ListView) view.findViewById(R.id.list);
-        mListener.onCreateTabView();
+
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mListener.onPauseFragment();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mListener.onResumeFragment();
     }
 
     public void setMessageLog(List<Message> messageLog) {
@@ -52,13 +66,28 @@ public abstract class BaseFragment extends Fragment implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
-        Log.i("Updating view", "view");
         mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     mAdapter.notifyDataSetChanged();
                 }
             });
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (BaseFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement BaseFragmentListener");
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     private class MessageAdapter extends ArrayAdapter<Message> {
@@ -111,21 +140,5 @@ public abstract class BaseFragment extends Fragment implements Observer {
 
             return rowView;
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (TabListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement FragmentListener");
-        }
-    }
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 }

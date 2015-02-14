@@ -106,7 +106,7 @@ public class ThreadedServer {
                             }
                         }
 
-                        serverListener.onMessageReceived("JOIN" + input.substring(input.indexOf(" ") + 1),
+                        serverListener.onMessageReceived(input.substring(input.indexOf(" ") + 1),
                                 channel, Message.MessageType.STATUS);
 
                         synchronized (channels){
@@ -124,7 +124,7 @@ public class ThreadedServer {
                         String channel = input.substring(5, input.indexOf(" "));
                         String status = input.substring(input.indexOf(" ") + 1, input.length());
 
-                        serverListener.onMessageReceived("LEAVE" + input.substring(input.indexOf(" ") + 1),
+                        serverListener.onMessageReceived(input.substring(input.indexOf(" ") + 1),
                                 channel, Message.MessageType.STATUS);
 
                         synchronized (channels) {

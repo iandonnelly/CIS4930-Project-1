@@ -108,6 +108,8 @@ public class Client {
         if(message != null && !message.isEmpty()){
             //Message to channel
             if (message.startsWith("#")) {
+                message = message.substring(0, message.indexOf(" ")) + " " + username + ": "
+                        + message.substring(message.indexOf(" ")+1, message.length());
                 printWriter.println(message);
             }
             //General message

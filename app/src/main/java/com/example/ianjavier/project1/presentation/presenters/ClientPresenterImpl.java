@@ -46,9 +46,10 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
             ((ClientView)mView).showJoinChannelDialog();
             return true;
         } else if (id == R.id.action_leave_channel) {
+            mClientToServerInteractor.leaveChannel(mClientModel.getChannel(
+                    mView.getCurrentTabPosition() - 1).getName());
+            mView.removeTab(mView.getCurrentTabPosition()- 1);
             mClientModel.removeChannel(mView.getCurrentTabPosition() - 1);
-            mView.removeTab();
-            // Send message to server to leave channel
             return true;
         }
         return super.onOptionsItemSelected(id);
@@ -61,21 +62,14 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
     }
 
     @Override
-    public void onCreateTabView() {
-        BaseFragment currentTab = mView.getCurrentTab();
-        int currentTabPosition = mView.getCurrentTabPosition();
+    public void onPauseFragment(int position) {
 
-        if (currentTabPosition == 0) {
-            // Set the status message log and add the view as an observer to the status message log
-            currentTab.setMessageLog(mClientModel.getStatusMessageLog());
-            mClientModel.addObserver(currentTab);
-        } else {
-            // Set the message log and add the view as an observer to the message log
-            currentTab.setMessageLog(mClientModel.getChannel(currentTabPosition - 1).getMessageLog());
-            mClientModel.getChannel(currentTabPosition - 1).addObserver(currentTab);
-        }
     }
 
+    @Override
+    public void onResumeFragment(int position) {
+
+    }
 
     @Override
     public void onDisconnectDialogPositiveClicked() {
@@ -110,7 +104,7 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
     @Override
     public void onSendMessageClicked(String message) {
         mClientToServerInteractor.sendMessage(message,
-                mClientModel.getChannel(mView.getCurrentTabPosition()).getName());
+                mClientModel.getChannel(mView.getCurrentTabPosition() - 1).getName());
     }
 
     @Override

@@ -37,5 +37,4 @@ public abstract class BasePresenterImpl implements BasePresenter {
     public void onBackPressed() {
         mView.showDisconnectDialog();
     }
-
 }

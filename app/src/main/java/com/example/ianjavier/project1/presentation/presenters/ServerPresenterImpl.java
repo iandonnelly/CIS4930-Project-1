@@ -1,7 +1,5 @@
 package com.example.ianjavier.project1.presentation.presenters;
 
-import android.util.Log;
-
 import com.example.ianjavier.project1.domain.ThreadedServer;
 import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractor;
 import com.example.ianjavier.project1.domain.interactors.ServerToClientsInteractorImpl;
@@ -55,23 +53,6 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
     }
 
     @Override
-    public void onCreateTabView() {
-        BaseFragment currentTab = mView.getCurrentTab();
-        int currentTabPosition = mView.getCurrentTabPosition();
-
-        if (currentTabPosition == 0) {
-            // Set the status message log and add the view as an observer to the status message log
-            currentTab.setMessageLog(mServerModel.getStatusMessageLog());
-            mServerModel.addObserver(currentTab);
-            Log.i("TAB", "Setting observer");
-        } else {
-            // Set the message log and add the view as an observer to the message log
-            currentTab.setMessageLog(mServerModel.getChannel(currentTabPosition - 1).getMessageLog());
-            mServerModel.getChannel(currentTabPosition - 1).addObserver(currentTab);
-        }
-    }
-
-    // @Override
     public void onDisconnectDialogPositiveClicked() {
         mServerModel.addStatusMessage("Stopping server");
         mServerToClientsInteractor.stopServer(this);
@@ -117,8 +98,6 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
 
     @Override
     public void onMessageReceived(String message, String channel, Message.MessageType messageType) {
-        Log.i("Message Received", message);
-
         if (channel == null && messageType == null) {
             mServerModel.addStatusMessage(message);
         } else {
@@ -134,7 +113,34 @@ public class ServerPresenterImpl extends BasePresenterImpl implements ServerPres
 
     @Override
     public void deleteChannel(String channel) {
+        mServerModel.getPosition(channel);
+        mView.removeTab(mServerModel.getPosition(channel) + 1);
         mServerModel.removeChannel(channel);
-        mView.removeTab();
+    }
+
+    @Override
+    public void onPauseFragment(int position) {
+        if (position == 0) {
+            mServerModel.deleteObservers();
+        } else {
+            if ((mServerModel.getChannelList().size() - 1) >= (position - 1)) {
+                mServerModel.getChannel(position - 1).deleteObservers();
+            }
+        }
+    }
+
+    @Override
+    public void onResumeFragment(int position) {
+        if (position == 0) {
+            if (mServerModel.countObservers() < 1) {
+                mServerModel.addObserver(mView.getTab(position));
+                mView.getTab(position).setMessageLog(mServerModel.getStatusMessageLog());
+            }
+        } else {
+            if (mServerModel.getChannel(position - 1).countObservers() < 1) {
+                mServerModel.addObserver(mView.getTab(position));
+                mView.getTab(position).setMessageLog(mServerModel.getChannel(position - 1).getMessageLog());
+            }
+        }
     }
 }

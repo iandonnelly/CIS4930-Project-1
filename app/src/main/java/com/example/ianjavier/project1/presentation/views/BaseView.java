@@ -5,9 +5,9 @@ import com.example.ianjavier.project1.presentation.views.fragments.BaseFragment;
 public interface BaseView {
     public void setActionBarTitle(String title);
     public void setActionBarSubtitle(String subtitle);
+    public BaseFragment getTab(int position);
     public void addTab(String channel);
-    public void removeTab();
-    public BaseFragment getCurrentTab();
+    public void removeTab(int position);
     public int getCurrentTabPosition();
     public void showDisconnectDialog();
     public void showServerErrorDialog();

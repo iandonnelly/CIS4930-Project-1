@@ -1,6 +1,7 @@
 package com.example.ianjavier.project1.presentation.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
@@ -9,11 +10,11 @@ public class ClientModel extends Observable {
     private int mPort;
     private String mNickname;
     private List<Message> mStatusMessageLog;
-    private List<Channel> mChannelList;
+    private LinkedList<Channel> mChannelList;
 
     public ClientModel() {
         mStatusMessageLog = new ArrayList<>();
-        mChannelList = new ArrayList<>();
+        mChannelList = new LinkedList<>();
     }
 
     public String getAddress() {

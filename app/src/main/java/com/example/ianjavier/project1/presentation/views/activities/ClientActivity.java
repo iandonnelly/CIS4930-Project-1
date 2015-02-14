@@ -7,14 +7,14 @@ import com.example.ianjavier.project1.R;
 import com.example.ianjavier.project1.presentation.presenters.BasePresenter;
 import com.example.ianjavier.project1.presentation.presenters.ClientPresenter;
 import com.example.ianjavier.project1.presentation.presenters.ClientPresenterImpl;
-import com.example.ianjavier.project1.presentation.views.ClientChannelListener;
 import com.example.ianjavier.project1.presentation.views.ClientView;
 import com.example.ianjavier.project1.presentation.views.dialogs.JoinChannelDialogFragment;
 import com.example.ianjavier.project1.presentation.views.fragments.BaseTabFragment;
+import com.example.ianjavier.project1.presentation.views.fragments.ClientChannelFragment;
 import com.example.ianjavier.project1.presentation.views.fragments.ClientTabsFragment;
 
 public class ClientActivity extends BaseActivity implements ClientView,
-        JoinChannelDialogFragment.JoinChannelDialogListener, ClientChannelListener {
+        JoinChannelDialogFragment.JoinChannelDialogListener, ClientChannelFragment.ClientChannelListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

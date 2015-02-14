@@ -2,6 +2,8 @@ package com.example.ianjavier.project1.presentation.model;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
@@ -9,11 +11,11 @@ public class ServerModel extends Observable {
     private String mName;
     private int mPort;
     private List<Message> mStatusMessageLog;
-    private List<Channel> mChannelList;
+    private LinkedList<Channel> mChannelList;
 
     public ServerModel() {
         mStatusMessageLog = new ArrayList<>();
-        mChannelList = new ArrayList<>();
+        mChannelList = new LinkedList<>();
     }
 
     public String getName() {
@@ -43,9 +45,13 @@ public class ServerModel extends Observable {
     }
 
     public synchronized void removeChannel(String channel) {
-        for (Channel c : mChannelList) {
+        Iterator<Channel> channelIterator = mChannelList.iterator();
+
+        while (channelIterator.hasNext()) {
+            Channel c = channelIterator.next();
+
             if (c.getName().equals(channel)) {
-                mChannelList.remove(c);
+                channelIterator.remove();
             }
         }
     }
@@ -61,6 +67,15 @@ public class ServerModel extends Observable {
 
     public Channel getChannel(int position) {
         return mChannelList.get(position);
+    }
+
+    public int getPosition(String channel) {
+        for (int i = 0; i < mChannelList.size(); i++) {
+            if (mChannelList.get(i).getName().equals(channel)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public List<Channel> getChannelList() {
