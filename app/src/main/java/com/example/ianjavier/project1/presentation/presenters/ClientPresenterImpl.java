@@ -110,7 +110,7 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
     @Override
     public void onSendMessageClicked(String message) {
         mClientToServerInteractor.sendMessage(message,
-                mClientModel.getChannel(mView.getCurrentTabPosition()).getName());
+                mClientModel.getChannel(mView.getCurrentTabPosition()-1).getName());
     }
 
     @Override

@@ -108,6 +108,7 @@ public class Client {
         if(message != null && !message.isEmpty()){
             //Message to channel
             if (message.startsWith("#")) {
+                message = message.substring(0, message.indexOf(" ")) + " " + username + ": " + message.substring(message.indexOf(" ")+1, message.length());
                 printWriter.println(message);
             }
             //General message
@@ -166,7 +167,7 @@ public class Client {
                                         message.length());
 
                                 clientListener.onMessageReceived(status, channel,
-                                        Message.MessageType.STATUS);
+                                        Message.MessageType.OTHER_USER);
                             }
                             // if general status
                             else {
@@ -174,7 +175,7 @@ public class Client {
                             };
                         } else if (message.startsWith("#")) {
                             String channel = message.substring(1, message.indexOf(" "));
-                            String user = message.substring(message.indexOf(" ") + 1, message.indexOf(":"));
+                            String user = message.substring(message.indexOf(" ") + 1, message.length());
 
                             if (user.equals(username)) {
                                 clientListener.onMessageReceived(
