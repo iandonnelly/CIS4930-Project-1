@@ -172,6 +172,8 @@ public class ThreadedServer {
                     else if (input.startsWith("#")){
                         String channel = input.substring(1, input.indexOf(" "));
 
+                        Log.i("Server", "channel message: " + input);
+
                         serverListener.onMessageReceived(input.substring(input.indexOf(" ") + 1),
                                 channel, Message.MessageType.OTHER_USER);
 
