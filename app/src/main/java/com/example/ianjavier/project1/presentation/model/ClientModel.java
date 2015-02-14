@@ -43,6 +43,7 @@ public class ClientModel extends Observable {
 
     public synchronized void addStatusMessage(String message) {
         mStatusMessageLog.add(new Message(message, Message.MessageType.STATUS));
+        setChanged();
         notifyObservers();
     }
 

@@ -85,7 +85,7 @@ public class Client {
 
     //Join channel
     public static void joinChannel(String channel){
-        printWriter.println("JOIN" + channel + " " + username + " has joined the channel");
+        printWriter.println("JOIN #" + channel + " " + username + " has joined the channel");
 
         //Check for error
         if(printWriter.checkError()) {
@@ -95,7 +95,7 @@ public class Client {
 
     // Leave channel
     public static void leaveChannel(String channel) {
-        printWriter.println("LEAVE" + channel + " " + username + " has left the channel");
+        printWriter.println("LEAVE #" + channel + " " + username + " has left the channel");
 
         //Check for error
         if(printWriter.checkError()) {
@@ -152,20 +152,20 @@ public class Client {
 
                     while (stringBuffer != null && !closed) {
                         String message = stringBuffer;
+
+                        Log.i("MESSAGE", message);
                         //Check message type
                         if (message.startsWith("CLOSE")) {
                             closed = true;
                             clientListener.onServerClosed();
                         } else if (message.startsWith("STATUS")) {
-                            String messageStatus = message.substring(message.indexOf(" "),
-                                    message.length());
+                            message = message.substring(message.indexOf(" ") + 1);
 
                             // If channel status
-                            if (messageStatus.startsWith("#")) {
+                            if (message.startsWith("#")) {
                                 String channel = message.substring(message.indexOf("#") + 1,
                                         message.indexOf(" "));
-                                String status = message.substring(message.indexOf(" ") + 1,
-                                        message.length());
+                                String status = message.substring(message.indexOf(" ") + 1);
 
                                 clientListener.onMessageReceived(status, channel,
                                         Message.MessageType.STATUS);

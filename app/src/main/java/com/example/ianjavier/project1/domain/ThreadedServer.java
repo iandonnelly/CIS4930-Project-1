@@ -97,8 +97,10 @@ public class ThreadedServer {
                     }
                     //If JOIN message
                     else if (input.startsWith("JOIN")){
-                        String channel = input.substring(4, input.indexOf(" "));
-                        String status = input.substring(input.indexOf(" ") + 1, input.length());
+                        input = input.substring(input.indexOf(" ") + 1);
+
+                        String channel = input.substring(input.indexOf("#") + 1, input.indexOf(" "));
+                        String status = input.substring(input.indexOf(" ") + 1);
 
                         synchronized (channels){
                             if (!channels.containsKey(channel)) {
@@ -106,8 +108,7 @@ public class ThreadedServer {
                             }
                         }
 
-                        serverListener.onMessageReceived(input.substring(input.indexOf(" ") + 1),
-                                channel, Message.MessageType.STATUS);
+                        serverListener.onMessageReceived(status, channel, Message.MessageType.STATUS);
 
                         synchronized (channels){
                             channels.put(channel, printWriter);
@@ -121,21 +122,22 @@ public class ThreadedServer {
                     }
                     // If LEAVE message
                     else if (input.startsWith("LEAVE")) {
-                        String channel = input.substring(5, input.indexOf(" "));
-                        String status = input.substring(input.indexOf(" ") + 1, input.length());
+                        input = input.substring(input.indexOf(" ") + 1);
 
-                        serverListener.onMessageReceived(input.substring(input.indexOf(" ") + 1),
-                                channel, Message.MessageType.STATUS);
+                        String channel = input.substring(input.indexOf("#") + 1, input.indexOf(" "));
+                        String status = input.substring(input.indexOf(" ") + 1);
 
-                        synchronized (channels) {
-                            for (PrintWriter printWriter : channels.get(channel)) {
-                                printWriter.println("STATUS #" + channel + " " + status);
-                            }
-                        }
+                        serverListener.onMessageReceived(status, channel, Message.MessageType.STATUS);
 
                         synchronized (channels) {
                             if (channels.containsEntry(channel, printWriter)) {
                                 channels.remove(channel, printWriter);
+                            }
+                        }
+
+                        synchronized (channels) {
+                            for (PrintWriter printWriter : channels.get(channel)) {
+                                printWriter.println("STATUS #" + channel + " " + status);
                             }
                         }
 

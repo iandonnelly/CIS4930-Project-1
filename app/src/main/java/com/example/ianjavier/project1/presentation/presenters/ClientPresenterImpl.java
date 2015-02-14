@@ -46,9 +46,11 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
             ((ClientView)mView).showJoinChannelDialog();
             return true;
         } else if (id == R.id.action_leave_channel) {
+            mClientModel.addStatusMessage("Left channel " + mClientModel.getChannel(
+                    mView.getCurrentTabPosition() - 1).getName());
             mClientToServerInteractor.leaveChannel(mClientModel.getChannel(
                     mView.getCurrentTabPosition() - 1).getName());
-            mView.removeTab(mView.getCurrentTabPosition()- 1);
+            mView.removeTab(mView.getCurrentTabPosition());
             mClientModel.removeChannel(mView.getCurrentTabPosition() - 1);
             return true;
         }
@@ -63,12 +65,28 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
 
     @Override
     public void onPauseFragment(int position) {
-
+        if (position == 0) {
+            mClientModel.deleteObservers();
+        } else {
+            if ((mClientModel.getChannelList().size() - 1) >= (position - 1)) {
+                mClientModel.getChannel(position - 1).deleteObservers();
+            }
+        }
     }
 
     @Override
     public void onResumeFragment(int position) {
-
+        if (position == 0) {
+            if (mClientModel.countObservers() < 1) {
+                mClientModel.addObserver(mView.getTab(position));
+                mView.getTab(position).setMessageLog(mClientModel.getStatusMessageLog());
+            }
+        } else {
+            if (mClientModel.getChannel(position - 1).countObservers() < 1) {
+                mClientModel.addObserver(mView.getTab(position));
+                mView.getTab(position).setMessageLog(mClientModel.getChannel(position - 1).getMessageLog());
+            }
+        }
     }
 
     @Override
@@ -116,7 +134,7 @@ public class ClientPresenterImpl extends BasePresenterImpl implements
             }
         }
 
-        mClientModel.addStatusMessage("Joining channel " + channel);
+        mClientModel.addStatusMessage("Joined channel " + channel);
         mClientModel.addChannel(new Channel(channel));
         mClientToServerInteractor.joinChannel(channel);
         mView.addTab(mClientModel.getLastChannel().getName());

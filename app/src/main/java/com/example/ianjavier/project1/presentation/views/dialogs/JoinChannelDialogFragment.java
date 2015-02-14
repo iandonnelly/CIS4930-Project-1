@@ -49,7 +49,7 @@ public class JoinChannelDialogFragment extends DialogFragment {
                         String channel = channelField.getText().toString();
 
                         // Ensure inputted values
-                        if (TextUtils.isEmpty(channel)) {
+                        if (TextUtils.isEmpty(channel) || channel.contains(" ")) {
                             channelField.setError("Invalid channel");
                             return;
                         }

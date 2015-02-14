@@ -52,17 +52,17 @@ public class JoinServerDialogFragment extends DialogFragment {
                         String nickname = nicknameField.getText().toString();
 
                         // Ensure inputted values
-                        if (TextUtils.isEmpty(address)) {
+                        if (TextUtils.isEmpty(address) || address.contains(" ")) {
                             addressField.setError("Invalid IP address");
                             return;
                         }
 
-                        if (TextUtils.isEmpty(port)) {
+                        if (TextUtils.isEmpty(port) || port.contains(".")) {
                             portField.setError("Invalid port");
                             return;
                         }
 
-                        if (TextUtils.isEmpty(nickname)) {
+                        if (TextUtils.isEmpty(nickname) || nickname.contains(" ")) {
                             nicknameField.setError("Invalid nickname");
                             return;
                         }
